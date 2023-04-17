@@ -71,7 +71,7 @@ If the file does not exist, it is simply ignored.
 
 ### :man_office_worker: Developers:woman_office_worker:
 
-* Haruaki Tamada [:octcat:](https://github.com/tamada)
+* Haruaki Tamada [:octocat:](https://github.com/tamada)
 
 ### :jack_o_lantern: Icon
 
