@@ -35,6 +35,6 @@ jobs:
       - name: Send coverage to coveralls
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secret.github_token }}
+          github-token: ${{ secrets.github_token }}
           path-to-lcov: coverage.lcov
         if: "matrix.os == 'ubuntu-latest'"
