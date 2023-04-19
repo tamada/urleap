@@ -2,6 +2,9 @@
 
 URL shortener via bit.ly, etc.
 
+[![build](https://github.com/tamada/urleap/actions/workflows/build.yml/badge.svg)](https://github.com/tamada/urleap/actions/workflows/build.yml)
+[![Coverage Status](https://coveralls.io/repos/github/tamada/urleap/badge.svg?branch=main)](https://coveralls.io/github/tamada/urleap?branch=main)
+
 ![MIT License](https://img.shields.io/badge/Licnese-MIT%20License-informational)
 
 ![0.1.0](https://img.shields.io/badge/Version-0.1.0-informational)
