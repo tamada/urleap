@@ -6,8 +6,7 @@ URL shortener via bit.ly, etc.
 [![Coverage Status](https://coveralls.io/repos/github/tamada/urleap/badge.svg?branch=main)](https://coveralls.io/github/tamada/urleap?branch=main)
 
 ![MIT License](https://img.shields.io/badge/Licnese-MIT%20License-informational)
-
-![0.1.0](https://img.shields.io/badge/Version-0.1.0-informational)
+![Version](https://img.shields.io/badge/Version-0.1.0-informational)
 
 ## :speaking_head: Overview
 
@@ -49,13 +48,30 @@ If the file does not exist, it is simply ignored.
 ```json
 {
   "provider": {
-	  "api": "bit.ly",
-	  "api_version": "v4",
+    "api": "bit.ly",
+    "api_version": "v4",
   }
 }
 ```
 
+## :anchor: Installation
 
+### :beer: Homebrew
+
+```sh
+brew tap tamada/brew
+brew install urleap
+```
+
+### :whale: Docker
+
+```sh
+docker run -it --rm tamada/urleap:latest -t <token> <url...>
+```
+
+#### tags
+
+* `0.2.0`, `latest`
 
 ## :smile: About
 
