@@ -6,7 +6,7 @@ URL shortener via bit.ly, etc.
 [![Coverage Status](https://coveralls.io/repos/github/tamada/urleap/badge.svg?branch=main)](https://coveralls.io/github/tamada/urleap?branch=main)
 
 ![MIT License](https://img.shields.io/badge/Licnese-MIT%20License-informational)
-![Version](https://img.shields.io/badge/Version-0.1.0-informational)
+![Version](https://img.shields.io/badge/Version-0.1.1-informational)
 
 ## :speaking_head: Overview
 
