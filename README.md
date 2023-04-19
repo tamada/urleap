@@ -50,13 +50,30 @@ If the file does not exist, it is simply ignored.
 ```json
 {
   "provider": {
-	  "api": "bit.ly",
-	  "api_version": "v4",
+    "api": "bit.ly",
+    "api_version": "v4",
   }
 }
 ```
 
+## :anchor: Installation
 
+### :beer: Homebrew
+
+```sh
+brew tap tamada/brew
+brew install urleap
+```
+
+### :whale: Docker
+
+```sh
+docker run -it --rm tamada/urleap:latest -t <token> <url...>
+```
+
+#### tags
+
+* `0.2.0`, `latest`
 
 ## :smile: About
 
