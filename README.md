@@ -4,10 +4,11 @@ URL shortener via bit.ly, etc.
 
 [![build](https://github.com/tamada/urleap/actions/workflows/build.yml/badge.svg)](https://github.com/tamada/urleap/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/tamada/urleap/badge.svg?branch=main)](https://coveralls.io/github/tamada/urleap?branch=main)
+[![codebeat badge](https://codebeat.co/badges/d63e3c67-fc5d-4f27-9e81-d80861d60c20)](https://codebeat.co/projects/github-com-tamada-urleap-main)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tamada/urleap)](https://goreportcard.com/report/github.com/tamada/urleap)
 
 ![MIT License](https://img.shields.io/badge/Licnese-MIT%20License-informational)
-
-![0.1.0](https://img.shields.io/badge/Version-0.1.0-informational)
+![Version](https://img.shields.io/badge/Version-0.1.0-informational)
 
 ## :speaking_head: Overview
 
