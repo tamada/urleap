@@ -73,7 +73,7 @@ docker run -it --rm tamada/urleap:latest -t <token> <url...>
 
 #### tags
 
-* `0.2.0`, `latest`
+* `0.1.2`, `latest`
 
 ## :smile: About
 
