@@ -50,13 +50,14 @@ jobs:
         with:
           args: >-
             --standalone
-            --output=site/public/index.html
+            --output=docs/public/index.html
+            --metadata tilte="urleap"
             README.md
       - name: Deploy Site
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site/public
+          publish_dir: ./docs/public
 
       # - name: Setup Hugo
       #   uses: peaceiris/actions-hugo@v2

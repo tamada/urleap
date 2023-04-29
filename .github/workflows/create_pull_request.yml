@@ -1,7 +1,5 @@
 name: create_pull_request
 
-# update_version が終了した時に pull request を作成する．
-
 on:
   push:
     branches:
@@ -28,6 +26,8 @@ jobs:
 
       - name: Create Release Pull Request
         if: ${{ steps.check_pr.outputs.count == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create \
             -B main \
@@ -37,6 +37,8 @@ jobs:
 
       - name: Edit Release Pull Request
         if: ${{ steps.check_pr.outputs.count != 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           pr_data=$(gh pr list -S 'Release v${{ steps.check_pr.outputs.tag }}'in:title \
             --json "title" \
