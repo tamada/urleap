@@ -1,9 +1,9 @@
-name: upgrade version
+name: update_version
 
 on:
   push:
     branches:
-      - release/v*
+      - releases/v*
     
 jobs:
   upgrade_version:

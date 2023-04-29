@@ -1,4 +1,4 @@
-name: Publish
+name: release
 
 on:
   pull_request:
@@ -43,6 +43,20 @@ jobs:
       - name: Build
         run:
           make
+
+        # pandoc で README を html に変換する．とりあえず．
+      - name: Build Site
+        uses: docker://pandoc/core:3.1.1
+        with:
+          args: >-
+            --standalone
+            --output=site/public/index.html
+            README.md
+      - name: Deploy Site
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site/public
 
       # - name: Setup Hugo
       #   uses: peaceiris/actions-hugo@v2

@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const VERSION = "0.1.0"
+const VERSION = "0.1.2"
 
 func goMain(args []string) int {
 	fmt.Println("Hello World")
