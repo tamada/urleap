@@ -8,7 +8,7 @@ URL shortener via bit.ly, etc.
 [![Go Report Card](https://goreportcard.com/badge/github.com/tamada/urleap)](https://goreportcard.com/report/github.com/tamada/urleap)
 
 ![MIT License](https://img.shields.io/badge/Licnese-MIT%20License-informational)
-![Version](https://img.shields.io/badge/Version-0.1.9-informational)
+![Version](https://img.shields.io/badge/Version-0.1.10-informational)
 
 ## :speaking_head: Overview
 
