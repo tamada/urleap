@@ -17,8 +17,11 @@ jobs:
         env:
           HEAD_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
+          echo "github_ref ${GITHUB_REF}"
+          echo "head_message: ${HEAD_MESSAGE}"
+
           HEAD_REF=${GITHUB_REF#refs/heads/}
-          TAG=${GITHUB_REF##**/v}"
+          TAG=${GITHUB_REF##**/v}
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           COMMIT_MESSAGE=$(echo "${HEAD_MESSAGE}" | sed -n -e 1p)
           echo "message=${COMMIT_MESSAGE}" >> "$GITHUB_OUTPUT"
