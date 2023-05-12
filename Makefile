@@ -3,10 +3,10 @@ VERSION := 0.1.16
 NAME := urleap
 DIST := $(NAME)-$(VERSION)
 
-urleap: coverage.out
-	go build -o urleap $(PACKAGE_LIST)
+urleap: coverage.out cmd/urleap/main.go
+	go build -o urleap cmd/urleap/main.go
 
-coverage.out:
+coverage.out: cmd/urleap/main_test.go
 	go test -covermode=count \
 		-coverprofile=coverage.out $(PACKAGE_LIST)
 
