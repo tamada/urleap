@@ -25,6 +25,7 @@ OPTIONS
     -t, --token <TOKEN>      specify the token for the service. This option is mandatory.
     -q, --qrcode <FILE>      include QR-code of the URL in the output.
     -c, --config <CONFIG>    specify the configuration file.
+    -g, --group <GROUP>      specify the group name for the service. Default is "urleap"
     -d, --delete             delete the specified shorten URL.
     -h, --help               print this mesasge and exit.
     -v, --version            print the version and exit.
@@ -55,6 +56,7 @@ type options struct {
 	token   string
 	qrcode  string
 	config  string
+	group   string
 	flagSet *flags
 }
 
@@ -72,6 +74,7 @@ func buildOptions(args []string) (*options, *flag.FlagSet) {
 	flags.StringVarP(&opts.token, "token", "t", "", "specify the token for the service. This option is mandatory.")
 	flags.StringVarP(&opts.qrcode, "qrcode", "q", "", "include QR-code of the URL in the output.")
 	flags.StringVarP(&opts.config, "config", "c", "", "specify the configuration file.")
+	flags.StringVarP(&opts.group, "group", "g", "", "specify the group name for the service. Default is \"urleap\"")
 	flags.BoolVarP(&opts.flagSet.deleteFlag, "delete", "d", false, "delete the specified shorten URL.")
 	flags.BoolVarP(&opts.flagSet.helpFlag, "help", "h", false, "print this mesasge and exit.")
 	flags.BoolVarP(&opts.flagSet.versionFlag, "version", "v", false, "print the version and exit.")
@@ -108,12 +111,21 @@ func performEach(bitly *urleap.Bitly, opts *options, config *urleap.Config, url 
 }
 
 func perform(opts *options, args []string) *UrleapError {
-	bitly := urleap.NewBitly()
+	bitly := urleap.NewBitly(opts.group)
 	config := urleap.NewConfig(opts.token)
 	for _, url := range args {
 		err := performEach(bitly, opts, config, url)
 		if err != nil {
 			fmt.Println(err.Error())
+		}
+	}
+	if len(args) == 0 {
+		urls, err := bitly.List(config)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		for _, url := range urls {
+			fmt.Println(url)
 		}
 	}
 	return nil
