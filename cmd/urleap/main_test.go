@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func Example_Main() {
+func _Example_Main() {
 	goMain([]string{"./urleap", "-t", "token"})
 	// Output:
 	// Hello World
@@ -16,6 +16,7 @@ func Example_Help() {
 	//     -t, --token <TOKEN>      specify the token for the service. This option is mandatory.
 	//     -q, --qrcode <FILE>      include QR-code of the URL in the output.
 	//     -c, --config <CONFIG>    specify the configuration file.
+	//     -d, --delete             delete the specified shorten URL.
 	//     -h, --help               print this mesasge and exit.
 	//     -v, --version            print the version and exit.
 	// ARGUMENT

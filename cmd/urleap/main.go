@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	flag "github.com/spf13/pflag"
+	"github.com/tamada/urleap"
 )
 
 const VERSION = "0.1.16"
@@ -24,6 +25,7 @@ OPTIONS
     -t, --token <TOKEN>      specify the token for the service. This option is mandatory.
     -q, --qrcode <FILE>      include QR-code of the URL in the output.
     -c, --config <CONFIG>    specify the configuration file.
+    -d, --delete             delete the specified shorten URL.
     -h, --help               print this mesasge and exit.
     -v, --version            print the version and exit.
 ARGUMENT
@@ -40,6 +42,12 @@ func (e UrleapError) Error() string {
 	return e.message
 }
 
+type flags struct {
+	deleteFlag  bool
+	helpFlag    bool
+	versionFlag bool
+}
+
 /*
 This struct holds the values of the options.
 */
@@ -47,22 +55,26 @@ type options struct {
 	token   string
 	qrcode  string
 	config  string
-	help    bool
-	version bool
+	flagSet *flags
+}
+
+func newOptions() *options {
+	return &options{flagSet: &flags{}}
 }
 
 /*
 Define the options and return the pointer to the options and the pointer to the flagset.
 */
 func buildOptions(args []string) (*options, *flag.FlagSet) {
-	opts := &options{}
+	opts := newOptions()
 	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	flags.Usage = func() { fmt.Println(helpMessage(args)) }
 	flags.StringVarP(&opts.token, "token", "t", "", "specify the token for the service. This option is mandatory.")
 	flags.StringVarP(&opts.qrcode, "qrcode", "q", "", "include QR-code of the URL in the output.")
 	flags.StringVarP(&opts.config, "config", "c", "", "specify the configuration file.")
-	flags.BoolVarP(&opts.help, "help", "h", false, "print this mesasge and exit.")
-	flags.BoolVarP(&opts.version, "version", "v", false, "print the version and exit.")
+	flags.BoolVarP(&opts.flagSet.deleteFlag, "delete", "d", false, "delete the specified shorten URL.")
+	flags.BoolVarP(&opts.flagSet.helpFlag, "help", "h", false, "print this mesasge and exit.")
+	flags.BoolVarP(&opts.flagSet.versionFlag, "version", "v", false, "print the version and exit.")
 	return opts, flags
 }
 
@@ -72,7 +84,7 @@ parseOptions parses options from the given command line arguments.
 func parseOptions(args []string) (*options, []string, *UrleapError) {
 	opts, flags := buildOptions(args)
 	flags.Parse(args[1:])
-	if opts.help {
+	if opts.flagSet.helpFlag {
 		fmt.Println(helpMessage(args))
 		return nil, nil, &UrleapError{statusCode: 0, message: ""}
 	}
@@ -82,8 +94,28 @@ func parseOptions(args []string) (*options, []string, *UrleapError) {
 	return opts, flags.Args(), nil
 }
 
+func performEach(bitly *urleap.Bitly, opts *options, config *urleap.Config, url string) error {
+	if opts.flagSet.deleteFlag {
+		return bitly.Delete(config, url)
+	} else {
+		result, err := bitly.Shorten(config, url)
+		if err != nil {
+			return err
+		}
+		fmt.Println(result)
+	}
+	return nil
+}
+
 func perform(opts *options, args []string) *UrleapError {
-	fmt.Println("Hello World")
+	bitly := urleap.NewBitly()
+	config := urleap.NewConfig(opts.token)
+	for _, url := range args {
+		err := performEach(bitly, opts, config, url)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
 	return nil
 }
 

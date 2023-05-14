@@ -3,7 +3,7 @@ VERSION := 0.1.16
 NAME := urleap
 DIST := $(NAME)-$(VERSION)
 
-urleap: coverage.out cmd/urleap/main.go
+urleap: coverage.out cmd/urleap/main.go *.go
 	go build -o urleap cmd/urleap/main.go
 
 coverage.out: cmd/urleap/main_test.go
