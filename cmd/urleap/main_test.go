@@ -26,7 +26,7 @@ func Example_Help() {
 }
 
 func Test_Main(t *testing.T) {
-	if status := goMain([]string{"./urleap", "-t", "token"}); status != 0 {
+	if status := goMain([]string{"./urleap", "-v"}); status != 0 {
 		t.Error("Expected 0, got ", status)
 	}
 }

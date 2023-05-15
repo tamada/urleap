@@ -11,6 +11,14 @@ import (
 
 const VERSION = "0.1.16"
 
+func versionString(args []string) string {
+	prog := "urleap"
+	if len(args) > 0 {
+		prog = filepath.Base(args[0])
+	}
+	return fmt.Sprintf("%s version %s", prog, VERSION)
+}
+
 /*
 helpMessage prints the help message.
 This function is used in the small tests, so it may be called with a zero-length slice.
@@ -104,6 +112,10 @@ func parseOptions(args []string) (*options, []string, *UrleapError) {
 	flags.Parse(args[1:])
 	if opts.flagSet.helpFlag {
 		fmt.Println(helpMessage(args))
+		return nil, nil, &UrleapError{statusCode: 0, message: ""}
+	}
+	if opts.flagSet.versionFlag {
+		fmt.Println(versionString(args))
 		return nil, nil, &UrleapError{statusCode: 0, message: ""}
 	}
 	if opts.token == "" {
