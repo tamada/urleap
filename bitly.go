@@ -55,18 +55,26 @@ func (bitly *Bitly) buildUrl(endpoint string) string {
 	return fmt.Sprintf("%s/%s", bitly.url, endpoint)
 }
 
-func (bitly *Bitly) List(config *Config) ([]*ShortenUrl, error) {
-	if bitly.group == "" {
-		gs, err := bitly.Groups(config)
-		if err != nil {
-			return nil, err
-		}
-		if len(gs) == 0 {
-			return nil, fmt.Errorf("no active groups")
-		}
-		bitly.group = gs[0].Guid
+func handleGroup(config *Config, bitly *Bitly) (string, error) {
+	if bitly.group != "" {
+		return bitly.group, nil
 	}
-	request, err := http.NewRequest("GET", bitly.buildUrl(fmt.Sprintf("/groups/%s/bitlinks?size=20", bitly.group)), nil)
+	gs, err := bitly.Groups(config)
+	if err != nil {
+		return "", err
+	}
+	if len(gs) == 0 {
+		return "", fmt.Errorf("no active groups")
+	}
+	return gs[0].Guid, nil
+}
+
+func (bitly *Bitly) List(config *Config) ([]*ShortenUrl, error) {
+	group, err := handleGroup(config, bitly)
+	if err != nil {
+		return nil, err
+	}
+	request, err := http.NewRequest("GET", bitly.buildUrl(fmt.Sprintf("/groups/%s/bitlinks?size=20", group)), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -74,11 +82,15 @@ func (bitly *Bitly) List(config *Config) ([]*ShortenUrl, error) {
 	if err != nil {
 		return nil, err
 	}
+	return handleListResponse(data, group)
+}
+
+func handleListResponse(data []byte, group string) ([]*ShortenUrl, error) {
 	result := struct {
 		Links []*ShortenUrl `json:"links"`
 	}{}
-	err = json.Unmarshal(data, &result)
-	return removeDeletedLinks(result.Links, bitly.group), err
+	err := json.Unmarshal(data, &result)
+	return removeDeletedLinks(result.Links, group), err
 }
 
 func removeDeletedLinks(links []*ShortenUrl, group string) []*ShortenUrl {
@@ -102,9 +114,13 @@ func (bitly *Bitly) Shorten(config *Config, url string) (*ShortenUrl, error) {
 	if err != nil {
 		return nil, err
 	}
+	return handleShortenResponse(data)
+}
+
+func handleShortenResponse(data []byte) (*ShortenUrl, error) {
 	result := &ShortenUrl{}
 	fmt.Println("result:", string(data))
-	err = json.Unmarshal(data, result)
+	err := json.Unmarshal(data, result)
 	if err != nil {
 		return nil, err
 	}
@@ -138,15 +154,22 @@ func (bitly *Bitly) QRCode(config *Config, shortenURL string) ([]byte, error) {
 }
 
 func sendRequest(request *http.Request, config *Config) ([]byte, error) {
-	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Token))
-	request.Header.Add("Content-Type", "application/json")
-	client := &http.Client{}
-	response, err := client.Do(request)
+	response, err := sendRequestImpl(request, config)
 	if err != nil {
 		return []byte{}, err
 	}
 	defer response.Body.Close()
+	return handleResponse(response)
+}
 
+func sendRequestImpl(request *http.Request, config *Config) (*http.Response, error) {
+	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.Token))
+	request.Header.Add("Content-Type", "application/json")
+	client := &http.Client{}
+	return client.Do(request)
+}
+
+func handleResponse(response *http.Response) ([]byte, error) {
 	if response.StatusCode/100 != 2 {
 		data, _ := io.ReadAll(response.Body)
 		fmt.Println("response body:", string(data))

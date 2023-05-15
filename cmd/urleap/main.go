@@ -58,19 +58,23 @@ type flags struct {
 	versionFlag   bool
 }
 
+type runOpts struct {
+	token  string
+	qrcode string
+	config string
+	group  string
+}
+
 /*
 This struct holds the values of the options.
 */
 type options struct {
-	token   string
-	qrcode  string
-	config  string
-	group   string
+	runOpt  *runOpts
 	flagSet *flags
 }
 
 func newOptions() *options {
-	return &options{flagSet: &flags{}}
+	return &options{runOpt: &runOpts{}, flagSet: &flags{}}
 }
 
 func (opts *options) mode(args []string) urleap.Mode {
@@ -81,6 +85,8 @@ func (opts *options) mode(args []string) urleap.Mode {
 		return urleap.List
 	case opts.flagSet.deleteFlag:
 		return urleap.Delete
+	case opts.runOpt.qrcode != "":
+		return urleap.QRCode
 	default:
 		return urleap.Shorten
 	}
@@ -93,10 +99,10 @@ func buildOptions(args []string) (*options, *flag.FlagSet) {
 	opts := newOptions()
 	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	flags.Usage = func() { fmt.Println(helpMessage(args)) }
-	flags.StringVarP(&opts.token, "token", "t", "", "specify the token for the service. This option is mandatory.")
-	flags.StringVarP(&opts.qrcode, "qrcode", "q", "", "include QR-code of the URL in the output.")
-	flags.StringVarP(&opts.config, "config", "c", "", "specify the configuration file.")
-	flags.StringVarP(&opts.group, "group", "g", "", "specify the group name for the service. Default is \"urleap\"")
+	flags.StringVarP(&opts.runOpt.token, "token", "t", "", "specify the token for the service. This option is mandatory.")
+	flags.StringVarP(&opts.runOpt.qrcode, "qrcode", "q", "", "include QR-code of the URL in the output.")
+	flags.StringVarP(&opts.runOpt.config, "config", "c", "", "specify the configuration file.")
+	flags.StringVarP(&opts.runOpt.group, "group", "g", "", "specify the group name for the service. Default is \"urleap\"")
 	flags.BoolVarP(&opts.flagSet.listGroupFlag, "list-group", "L", false, "list the groups. This is hidden option.")
 	flags.BoolVarP(&opts.flagSet.deleteFlag, "delete", "d", false, "delete the specified shorten URL.")
 	flags.BoolVarP(&opts.flagSet.helpFlag, "help", "h", false, "print this mesasge and exit.")
@@ -118,13 +124,13 @@ func parseOptions(args []string) (*options, []string, *UrleapError) {
 		fmt.Println(versionString(args))
 		return nil, nil, &UrleapError{statusCode: 0, message: ""}
 	}
-	if opts.token == "" {
+	if opts.runOpt.token == "" {
 		return nil, nil, &UrleapError{statusCode: 3, message: "no token was given"}
 	}
 	return opts, flags.Args(), nil
 }
 
-func shortenEach(bitly *urleap.Bitly, opts *options, config *urleap.Config, url string) error {
+func shortenEach(bitly *urleap.Bitly, config *urleap.Config, url string) error {
 	result, err := bitly.Shorten(config, url)
 	if err != nil {
 		return err
@@ -160,9 +166,9 @@ func listGroups(bitly *urleap.Bitly, config *urleap.Config) error {
 }
 
 func perform(opts *options, args []string) *UrleapError {
-	bitly := urleap.NewBitly(opts.group)
-	config := urleap.NewConfig(opts.config, opts.mode(args))
-	config.Token = opts.token
+	bitly := urleap.NewBitly(opts.runOpt.group)
+	config := urleap.NewConfig(opts.runOpt.config, opts.mode(args))
+	config.Token = opts.runOpt.token
 	switch config.RunMode {
 	case urleap.List:
 		err := listUrls(bitly, config)
@@ -179,7 +185,7 @@ func perform(opts *options, args []string) *UrleapError {
 		}
 	case urleap.Shorten:
 		for _, url := range args {
-			err := shortenEach(bitly, opts, config, url)
+			err := shortenEach(bitly, config, url)
 			if err != nil {
 				return makeError(err, 4)
 			}
