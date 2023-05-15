@@ -139,7 +139,7 @@ func shortenEach(bitly *urleap.Bitly, config *urleap.Config, url string) error {
 	return nil
 }
 
-func deleteEach(bitly *urleap.Bitly, opts *options, config *urleap.Config, url string) error {
+func deleteEach(bitly *urleap.Bitly, config *urleap.Config, url string) error {
 	return bitly.Delete(config, url)
 }
 
@@ -165,6 +165,16 @@ func listGroups(bitly *urleap.Bitly, config *urleap.Config) error {
 	return nil
 }
 
+func performImpl(args []string, executor func(url string) error) *UrleapError {
+	for _, url := range args {
+		err := executor(url)
+		if err != nil {
+			return makeError(err, 3)
+		}
+	}
+	return nil
+}
+
 func perform(opts *options, args []string) *UrleapError {
 	bitly := urleap.NewBitly(opts.runOpt.group)
 	config := urleap.NewConfig(opts.runOpt.config, opts.mode(args))
@@ -177,19 +187,13 @@ func perform(opts *options, args []string) *UrleapError {
 		err := listGroups(bitly, config)
 		return makeError(err, 2)
 	case urleap.Delete:
-		for _, url := range args {
-			err := deleteEach(bitly, opts, config, url)
-			if err != nil {
-				return makeError(err, 3)
-			}
-		}
+		return performImpl(args, func(url string) error {
+			return deleteEach(bitly, config, url)
+		})
 	case urleap.Shorten:
-		for _, url := range args {
-			err := shortenEach(bitly, config, url)
-			if err != nil {
-				return makeError(err, 4)
-			}
-		}
+		return performImpl(args, func(url string) error {
+			return shortenEach(bitly, config, url)
+		})
 	}
 	return nil
 }
