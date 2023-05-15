@@ -13,12 +13,12 @@ type Bitly struct {
 	group string
 }
 
-type group struct {
-	guid     string `json:"guid"`
-	isActive bool   `json:"is_active"`
+type Group struct {
+	Guid     string `json:"guid"`
+	IsActive bool   `json:"is_active"`
 }
 
-func (bitly *Bitly) groups(config *Config) (*group, error) {
+func (bitly *Bitly) Groups(config *Config) ([]*Group, error) {
 	request, err := http.NewRequest("GET", bitly.buildUrl("groups"), nil)
 	if err != nil {
 		return nil, err
@@ -27,15 +27,24 @@ func (bitly *Bitly) groups(config *Config) (*group, error) {
 	if err != nil {
 		return nil, err
 	}
-	result := []*group{}
-	err = json.Unmarshal(data, &result)
-	for _, g := range result {
-		if g.isActive {
-			return g, err
-		}
+	return parseGroups(data)
+}
 
+func parseGroups(data []byte) ([]*Group, error) {
+	result := struct {
+		Groups []*Group `json:"groups"`
+	}{}
+	err := json.Unmarshal(data, &result)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("no active group found")
+	returnValue := []*Group{}
+	for _, g := range result.Groups {
+		if g.IsActive {
+			returnValue = append(returnValue, g)
+		}
+	}
+	return returnValue, nil
 }
 
 func NewBitly(group string) *Bitly {
@@ -48,11 +57,14 @@ func (bitly *Bitly) buildUrl(endpoint string) string {
 
 func (bitly *Bitly) List(config *Config) ([]*ShortenUrl, error) {
 	if bitly.group == "" {
-		gs, err := bitly.groups(config)
+		gs, err := bitly.Groups(config)
 		if err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("list subcommand requires a group guid: %s", gs.guid)
+		if len(gs) == 0 {
+			return nil, fmt.Errorf("no active groups")
+		}
+		bitly.group = gs[0].Guid
 	}
 	request, err := http.NewRequest("GET", bitly.buildUrl(fmt.Sprintf("/groups/%s/bitlinks?size=20", bitly.group)), nil)
 	if err != nil {

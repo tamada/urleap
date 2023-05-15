@@ -44,9 +44,10 @@ func (e UrleapError) Error() string {
 }
 
 type flags struct {
-	deleteFlag  bool
-	helpFlag    bool
-	versionFlag bool
+	deleteFlag    bool
+	listGroupFlag bool
+	helpFlag      bool
+	versionFlag   bool
 }
 
 /*
@@ -64,6 +65,19 @@ func newOptions() *options {
 	return &options{flagSet: &flags{}}
 }
 
+func (opts *options) mode(args []string) urleap.Mode {
+	switch {
+	case opts.flagSet.listGroupFlag:
+		return urleap.ListGroup
+	case len(args) == 0:
+		return urleap.List
+	case opts.flagSet.deleteFlag:
+		return urleap.Delete
+	default:
+		return urleap.Shorten
+	}
+}
+
 /*
 Define the options and return the pointer to the options and the pointer to the flagset.
 */
@@ -75,6 +89,7 @@ func buildOptions(args []string) (*options, *flag.FlagSet) {
 	flags.StringVarP(&opts.qrcode, "qrcode", "q", "", "include QR-code of the URL in the output.")
 	flags.StringVarP(&opts.config, "config", "c", "", "specify the configuration file.")
 	flags.StringVarP(&opts.group, "group", "g", "", "specify the group name for the service. Default is \"urleap\"")
+	flags.BoolVarP(&opts.flagSet.listGroupFlag, "list-group", "L", false, "list the groups. This is hidden option.")
 	flags.BoolVarP(&opts.flagSet.deleteFlag, "delete", "d", false, "delete the specified shorten URL.")
 	flags.BoolVarP(&opts.flagSet.helpFlag, "help", "h", false, "print this mesasge and exit.")
 	flags.BoolVarP(&opts.flagSet.versionFlag, "version", "v", false, "print the version and exit.")
@@ -97,38 +112,79 @@ func parseOptions(args []string) (*options, []string, *UrleapError) {
 	return opts, flags.Args(), nil
 }
 
-func performEach(bitly *urleap.Bitly, opts *options, config *urleap.Config, url string) error {
-	if opts.flagSet.deleteFlag {
-		return bitly.Delete(config, url)
-	} else {
-		result, err := bitly.Shorten(config, url)
-		if err != nil {
-			return err
-		}
-		fmt.Println(result)
+func shortenEach(bitly *urleap.Bitly, opts *options, config *urleap.Config, url string) error {
+	result, err := bitly.Shorten(config, url)
+	if err != nil {
+		return err
+	}
+	fmt.Println(result)
+	return nil
+}
+
+func deleteEach(bitly *urleap.Bitly, opts *options, config *urleap.Config, url string) error {
+	return bitly.Delete(config, url)
+}
+
+func listUrls(bitly *urleap.Bitly, config *urleap.Config) error {
+	urls, err := bitly.List(config)
+	if err != nil {
+		return err
+	}
+	for _, url := range urls {
+		fmt.Println(url)
+	}
+	return nil
+}
+
+func listGroups(bitly *urleap.Bitly, config *urleap.Config) error {
+	groups, err := bitly.Groups(config)
+	if err != nil {
+		return err
+	}
+	for i, group := range groups {
+		fmt.Printf("GUID[%d] %s\n", i, group.Guid)
 	}
 	return nil
 }
 
 func perform(opts *options, args []string) *UrleapError {
 	bitly := urleap.NewBitly(opts.group)
-	config := urleap.NewConfig(opts.token)
-	for _, url := range args {
-		err := performEach(bitly, opts, config, url)
-		if err != nil {
-			fmt.Println(err.Error())
+	config := urleap.NewConfig(opts.config, opts.mode(args))
+	config.Token = opts.token
+	switch config.RunMode {
+	case urleap.List:
+		err := listUrls(bitly, config)
+		return makeError(err, 1)
+	case urleap.ListGroup:
+		err := listGroups(bitly, config)
+		return makeError(err, 2)
+	case urleap.Delete:
+		for _, url := range args {
+			err := deleteEach(bitly, opts, config, url)
+			if err != nil {
+				return makeError(err, 3)
+			}
 		}
-	}
-	if len(args) == 0 {
-		urls, err := bitly.List(config)
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		for _, url := range urls {
-			fmt.Println(url)
+	case urleap.Shorten:
+		for _, url := range args {
+			err := shortenEach(bitly, opts, config, url)
+			if err != nil {
+				return makeError(err, 4)
+			}
 		}
 	}
 	return nil
+}
+
+func makeError(err error, status int) *UrleapError {
+	if err == nil {
+		return nil
+	}
+	ue, ok := err.(*UrleapError)
+	if ok {
+		return ue
+	}
+	return &UrleapError{statusCode: status, message: err.Error()}
 }
 
 func goMain(args []string) int {

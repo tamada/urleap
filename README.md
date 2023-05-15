@@ -17,11 +17,13 @@ There are several URL shortening services such as [bit.ly](https://bit.ly) and [
 ## :runner: Usage
 
 ```sh
-urleap [OPTIONS] [URL...]
+urleap [OPTIONS] [URLs...]
 OPTIONS
   -t, --token <TOKEN>      specify the token for the service. This option is mandatory.
   -q, --qrcode <FILE>      include QR-code of the URL in the output.
   -c, --config <CONFIG>    specify the configuration file.
+  -g, --group <GROUP>      specify the group name for the service. Default is "urleap"
+  -d, --delete             delete the specified shorten URL.
   -h, --help               print this mesasge and exit.
   -v, --version            print the version and exit.
 ARGUMENT
@@ -37,9 +39,7 @@ ARGUMENT
 If the file does not exist, it is simply ignored.
 
 * `/opt/homebrew/opt/urleap/config.json`
-
 * `/usr/local/opt/urleap/config.json`
-
 * `$URLEAP_HOME/config.json`
 * `~/.config/urleap/config.json`
 * `./.urleap.json`
@@ -49,10 +49,12 @@ If the file does not exist, it is simply ignored.
 
 ```json
 {
-  "provider": {
-    "api": "bit.ly",
-    "api_version": "v4",
-  }
+  "providers": [
+    {
+      "api": "bit.ly",
+      "api_version": "v4",
+    }
+  ]
 }
 ```
 
@@ -61,8 +63,7 @@ If the file does not exist, it is simply ignored.
 ### :beer: Homebrew
 
 ```sh
-brew tap tamada/brew
-brew install urleap
+brew install tamada/brew/urleap
 ```
 
 ### :whale: Docker

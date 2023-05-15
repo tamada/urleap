@@ -10,7 +10,7 @@ type ShortenUrl struct {
 }
 
 func (surl *ShortenUrl) String() string {
-	return fmt.Sprintf("%s: %s (%s)", surl.Original, surl.Shorten, surl.Group)
+	return fmt.Sprintf("%s (%s): (%s)", surl.Shorten, surl.Group, surl.Original)
 }
 
 type URLShortener interface {
