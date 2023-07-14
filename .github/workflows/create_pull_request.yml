@@ -32,6 +32,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          echo "count: ${{ steps.check_pr.outputs.count }}"
           gh pr create \
             -B main \
             -t 'Release v${{ steps.check_pr.outputs.tag }} ${{ steps.check_pr.outputs.message }}' \
