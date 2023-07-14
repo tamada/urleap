@@ -1,8 +1,10 @@
 FROM golang:1.19-bullseye as builder
 
+ARG TOKEN
+
 ADD . /go/urleap
 WORKDIR /go/urleap
-RUN make clean && make && adduser --disabled-login --disabled-password nonroot
+RUN export URLEAP_TOKEN=${TOKEN} && make clean && make && adduser --disabled-login --disabled-password nonroot
 
 FROM scratch
 

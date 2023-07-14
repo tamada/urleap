@@ -1,10 +1,12 @@
 PACKAGE_LIST := $(shell go list ./...)
-VERSION := 0.2.1
+VERSION := 0.2.2
 NAME := urleap
 DIST := $(NAME)-$(VERSION)
 
+TOKEN := $(shell cat token)
+
 urleap: coverage.out cmd/urleap/main.go *.go
-	go build -o urleap cmd/urleap/main.go cmd/urleap/completions.go
+	URLEAP_TOKEN=$(TOKEN) go build -o urleap cmd/urleap/main.go cmd/urleap/completions.go
 	./urleap --generate-completions
 
 coverage.out: cmd/urleap/main_test.go
@@ -14,6 +16,7 @@ coverage.out: cmd/urleap/main_test.go
 docker: urleap
 #	docker build -t ghcr.io/tamada/urleap:$(VERSION) -t ghcr.io/tamada/urleap:latest .
 	docker buildx build -t ghcr.io/tamada/urleap:$(VERSION) \
+		--build-arg TOKEN=$(TOKEN) \
 		-t ghcr.io/tamada/urleap:latest --platform=linux/arm64/v8,linux/amd64 --push .
 
 # refer from https://pod.hatenablog.com/entry/2017/06/13/150342

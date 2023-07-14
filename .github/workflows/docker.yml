@@ -17,7 +17,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.17
+          go-version: 1.19
 
       - name: Git Tag name
         id: vars
@@ -55,6 +55,8 @@ jobs:
           context: .
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
+          build-args:
+            --build-arg TOKEN=${{ secrets.BITLY_TOKEN }}
           tags: |
             ghcr.io/tamada/urleap:${{ steps.vars.outputs.tag }}
             ghcr.io/tamada/urleap:latest
