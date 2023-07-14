@@ -23,7 +23,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: build
-        run: URLEAP_TOKEN=${BITLY_TOKEN} make
+        run: make
+        env:
+          URLEAP_TOKEN: ${{ secrets.BITLY_TOKEN }}
 
       - name: Convert coverage to lcov format
         uses: jandelgado/gcov2lcov-action@v1.0.0
