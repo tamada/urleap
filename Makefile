@@ -1,5 +1,5 @@
 PACKAGE_LIST := $(shell go list ./...)
-VERSION := 0.2.2
+VERSION := 0.2.4
 NAME := urleap
 DIST := $(NAME)-$(VERSION)
 
