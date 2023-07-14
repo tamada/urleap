@@ -56,7 +56,7 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           build-args:
-            --build-arg TOKEN=${{ secrets.BITLY_TOKEN }}
+            TOKEN=${{ secrets.BITLY_TOKEN }}
           tags: |
             ghcr.io/tamada/urleap:${{ steps.vars.outputs.tag }}
             ghcr.io/tamada/urleap:latest
