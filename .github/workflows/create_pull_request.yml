@@ -26,13 +26,11 @@ jobs:
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           COMMIT_MESSAGE=$(echo "${HEAD_MESSAGE}" | sed -n -e 1p)
           echo "message=${COMMIT_MESSAGE}" >> "$GITHUB_OUTPUT"
-          echo "tag: ${TAG}, check pr: $(gh pr list -S "Release v${TAG}"in:title)"
           echo "count=$(gh pr list -S "Release v${TAG}"in:title | wc -l)" >> "$GITHUB_OUTPUT"
   
       - name: Create Release Pull Request
         if: ${{ steps.check_pr.outputs.count == 0 }}
         run: |
-          echo "count: ${{ steps.check_pr.outputs.count }}"
           gh pr create \
             -B main \
             -t 'Release v${{ steps.check_pr.outputs.tag }} ${{ steps.check_pr.outputs.message }}' \
