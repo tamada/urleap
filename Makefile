@@ -1,10 +1,11 @@
 PACKAGE_LIST := $(shell go list ./...)
-VERSION := 0.1.16
+VERSION := 0.2.0
 NAME := urleap
 DIST := $(NAME)-$(VERSION)
 
 urleap: coverage.out cmd/urleap/main.go *.go
-	go build -o urleap cmd/urleap/main.go
+	go build -o urleap cmd/urleap/main.go cmd/urleap/completions.go
+	./urleap --generate-completions
 
 coverage.out: cmd/urleap/main_test.go
 	go test -covermode=count \
@@ -18,13 +19,13 @@ docker: urleap
 # refer from https://pod.hatenablog.com/entry/2017/06/13/150342
 define _createDist
 	mkdir -p dist/$(1)_$(2)/$(DIST)
-	GOOS=$1 GOARCH=$2 go build -o dist/$(1)_$(2)/$(DIST)/$(NAME)$(3) cmd/$(NAME)/main.go
-	cp -r README.md LICENSE dist/$(1)_$(2)/$(DIST)
+	GOOS=$1 GOARCH=$2 go build -o dist/$(1)_$(2)/$(DIST)/$(NAME)$(3) cmd/$(NAME)/main.go cmd/$(NAME)/completions.go
+	cp -r README.md LICENSE completions dist/$(1)_$(2)/$(DIST)
 #	cp -r docs/public dist/$(1)_$(2)/$(DIST)/docs
 	tar cfz dist/$(DIST)_$(1)_$(2).tar.gz -C dist/$(1)_$(2) $(DIST)
 endef
 
-dist: urleap
+dist: urleap docs
 	@$(call _createDist,darwin,amd64,)
 	@$(call _createDist,darwin,arm64,)
 	@$(call _createDist,windows,amd64,.exe)
