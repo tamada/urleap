@@ -13,6 +13,9 @@ coverage.out: cmd/urleap/main_test.go
 	go test -covermode=count \
 		-coverprofile=coverage.out $(PACKAGE_LIST)
 
+site:
+	make -C docs build_with_hugo
+
 docker: urleap
 #	docker build -t ghcr.io/tamada/urleap:$(VERSION) -t ghcr.io/tamada/urleap:latest .
 	docker buildx build -t ghcr.io/tamada/urleap:$(VERSION) \

@@ -1,0 +1,5 @@
+enableSearch = true
+enableCodeCopy = true
+
+[header]
+    logo = "urleap.png"

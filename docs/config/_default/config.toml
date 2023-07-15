@@ -1,0 +1,10 @@
+baseURL = "https://tamada.github.io/urleap"
+defaultContentLanguage = "en"
+theme = "congo"
+title = "urleap"
+
+enableRobotTXT = "true"
+paginate = 15
+
+[outputs]
+    home = ["HTML", "RSS", "JSON"]

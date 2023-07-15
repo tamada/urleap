@@ -1,0 +1,9 @@
+languageName = "English"
+copyright = "(C) 2023 Haruaki TAMADA"
+
+[params]
+    dateFormat = "2006-01-02"
+
+[author]
+    name = "Haruaki Tamada"
+    image = "harry.png"
