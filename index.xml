@@ -1,0 +1,9 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>urleap</title>
+        <link>https://tamada.github.io/urleap/</link>
+        <description>URL shortener via bit.ly</description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language>
+            <atom:link href="https://tamada.github.io/urleap/index.xml" rel="self" type="application/rss+xml" />
+        </channel>
+</rss>
