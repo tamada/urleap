@@ -4,3 +4,6 @@
 [submodule "docs/themes/loveit"]
 	path = docs/themes/loveit
 	url = https://github.com/dillonzq/LoveIt.git
+[submodule "docs/themes/congo"]
+	path = docs/themes/congo
+	url = https://github.com/jpanther/congo.git

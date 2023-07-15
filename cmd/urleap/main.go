@@ -9,7 +9,7 @@ import (
 	"github.com/tamada/urleap"
 )
 
-const VERSION = "0.2.3"
+const VERSION = "0.2.5"
 
 func versionString(args []string) string {
 	prog := "urleap"

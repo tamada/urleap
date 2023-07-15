@@ -1,5 +1,5 @@
 PACKAGE_LIST := $(shell go list ./...)
-VERSION := 0.2.3
+VERSION := 0.2.5
 NAME := urleap
 DIST := $(NAME)-$(VERSION)
 
@@ -12,6 +12,9 @@ urleap: coverage.out cmd/urleap/main.go *.go
 coverage.out: cmd/urleap/main_test.go
 	go test -covermode=count \
 		-coverprofile=coverage.out $(PACKAGE_LIST)
+
+site:
+	make -C docs build_with_hugo
 
 docker: urleap
 #	docker build -t ghcr.io/tamada/urleap:$(VERSION) -t ghcr.io/tamada/urleap:latest .

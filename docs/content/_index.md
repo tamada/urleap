@@ -2,8 +2,6 @@
 title: "urleap"
 ---
 
-# urleap
-
 URL shortener via bit.ly, etc.
 
 [![build](https://github.com/tamada/urleap/actions/workflows/build.yml/badge.svg)](https://github.com/tamada/urleap/actions/workflows/build.yml)
@@ -111,4 +109,4 @@ docker run -it --rm tamada/urleap:latest -t <token> <url...>
 
 ### :jack_o_lantern: Icon
 
-![Icon](docs/static/images/urleap.svg)
+![Icon](assets/urleap.svg)
